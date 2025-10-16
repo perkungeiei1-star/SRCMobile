@@ -12,7 +12,7 @@
         Size = UDim2.fromOffset(580,460),
         Acrylic = false,
         Theme = "Dark",
-        MinimizeKey = Enum.KeyCode.RightControl
+        MinimizeKey = Enum.KeyCode.F
     })
     local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
     local player = Players.LocalPlayer
@@ -35,7 +35,7 @@
     local TabSpecter = Window:AddTab({ Title = "Specter Player", Icon = "eye" })
     local TabJuice = Window:AddTab({ Title = "Buy Juice", Icon = "shopping-cart" })
     local TabMixerV2 = Window:AddTab({ Title = "Mixer Fruit", Icon = "syringe" })
-    local Setting = Window:AddTab({ Title = "Setting", Icon = "settings" })
+    local TabSetting = Window:AddTab({ Title = "Setting", Icon = "settings" })
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
@@ -1188,12 +1188,11 @@ TabMain:AddToggle("ESPPlayer", {
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local LocalPlayer = Players.LocalPlayer
-local respawnPosition = Vector3.new(-147.59268188476562, 210.9167022705078, -733.9445190429688)
+local respawnPosition = Vector3.new(-144.10096740722656, 210.79701232910156, -740.4284057617188)
 
 local autoRespawnEnabled = false
 local teleportDelay = 2
 local respawnDelay = 7
-
 
 TabMain:AddToggle("AutoRespawnToggle", {
     Title = "Auto Spawn (Farm Bounty)",
@@ -1204,28 +1203,29 @@ TabMain:AddToggle("AutoRespawnToggle", {
     end
 })
 
-
 local function triggerSpawn()
     local args = { [1] = 2 }
     ReplicatedStorage:WaitForChild("Connections"):WaitForChild("Spawn"):FireServer(unpack(args))
 end
 
-local function teleportToPosition(pos)
-    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-        LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(pos)
+local function walkToPosition(pos)
+    local character = LocalPlayer.Character
+    if character and character:FindFirstChild("Humanoid") and character:FindFirstChild("HumanoidRootPart") then
+        local humanoid = character.Humanoid
+        humanoid:MoveTo(pos)
     end
 end
-
 
 task.spawn(function()
     while true do
         if autoRespawnEnabled and Players:FindFirstChild(LocalPlayer.Name) then
-
             triggerSpawn()
 
             wait(teleportDelay)
-            teleportToPosition(respawnPosition)
 
+            walkToPosition(respawnPosition)
+
+            -- รอให้ตายก่อนรอบต่อไป
             if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
                 local humanoid = LocalPlayer.Character.Humanoid
                 humanoid.Died:Wait()
@@ -1238,6 +1238,7 @@ task.spawn(function()
         end
     end
 end)
+
 
     TabMain:AddButton({
     Title = "God Mode",
